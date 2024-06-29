@@ -1,0 +1,60 @@
+{
+  "success": true,
+  "message": "Groups within time range retrieved successfully",
+  "data": {
+    "totalPages": 1,
+    "totalElements": 2,
+    "size": 25,
+    "content": [
+      {
+        "id": "group1",
+        "name": "Recent Group 1",
+        "category": "TestCategory",
+        "lastTimeActive": "2024-06-29T05:47:08.234Z",
+        "totalMessages": 100,
+        "totalTasks": 10,
+        "totalDoneTasks": 8,
+        "totalMeetings": 5,
+        "totalMentees": 20,
+        "totalMentors": 5,
+        "status": "ACTIVE"
+      },
+      {
+        "id": "group2",
+        "name": "Recent Group 2",
+        "category": "AnotherCategory",
+        "lastTimeActive": "2024-06-28T10:30:00.000Z",
+        "totalMessages": 50,
+        "totalTasks": 5,
+        "totalDoneTasks": 3,
+        "totalMeetings": 2,
+        "totalMentees": 15,
+        "totalMentors": 3,
+        "status": "ACTIVE"
+      }
+    ],
+    "number": 0,
+    "sort": {
+      "empty": false,
+      "sorted": true,
+      "unsorted": false
+    },
+    "first": true,
+    "last": true,
+    "numberOfElements": 2,
+    "pageable": {
+      "offset": 0,
+      "sort": {
+        "empty": false,
+        "sorted": true,
+        "unsorted": false
+      },
+      "pageNumber": 0,
+      "pageSize": 25,
+      "paged": true,
+      "unpaged": false
+    },
+    "empty": false
+  },
+  "returnCode": 0
+}

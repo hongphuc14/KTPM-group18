@@ -1,0 +1,47 @@
+{
+  "success": true,
+  "message": "Groups retrieved successfully",
+  "data": {
+    "totalPages": 3,
+    "totalElements": 25,
+    "size": 10,
+    "content": [
+      {
+        "id": "group11",
+        "name": "Test Group 11",
+        "category": "TestCategory",
+        "lastTimeActive": "2024-06-29T05:47:08.234Z",
+        "totalMessages": 100,
+        "totalTasks": 10,
+        "totalDoneTasks": 8,
+        "totalMeetings": 5,
+        "totalMentees": 20,
+        "totalMentors": 5,
+        "status": "ACTIVE"
+      }
+    ],
+    "number": 1,
+    "sort": {
+      "empty": false,
+      "sorted": true,
+      "unsorted": false
+    },
+    "first": false,
+    "last": false,
+    "numberOfElements": 10,
+    "pageable": {
+      "offset": 10,
+      "sort": {
+        "empty": false,
+        "sorted": true,
+        "unsorted": false
+      },
+      "pageNumber": 1,
+      "pageSize": 10,
+      "paged": true,
+      "unpaged": false
+    },
+    "empty": false
+  },
+  "returnCode": 0
+}

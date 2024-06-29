@@ -1,0 +1,33 @@
+{
+  "success": true,
+  "message": "No groups found",
+  "data": {
+    "totalPages": 0,
+    "totalElements": 0,
+    "size": 25,
+    "content": [],
+    "number": 0,
+    "sort": {
+      "empty": true,
+      "sorted": false,
+      "unsorted": true
+    },
+    "first": true,
+    "last": true,
+    "numberOfElements": 0,
+    "pageable": {
+      "offset": 0,
+      "sort": {
+        "empty": true,
+        "sorted": false,
+        "unsorted": true
+      },
+      "pageNumber": 0,
+      "pageSize": 25,
+      "paged": true,
+      "unpaged": false
+    },
+    "empty": true
+  },
+  "returnCode": 0
+}
