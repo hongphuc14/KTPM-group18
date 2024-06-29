@@ -1,0 +1,274 @@
+{
+	"id": "a5714158-5229-4a97-b4c7-74e86450dd84",
+	"name": "ApiDoc",
+	"description": "Testing the API doc integration",
+	"auth": null,
+	"events": null,
+	"variables": [
+	  
+	],
+	"order": [
+	  
+	],
+	"folders_order": [
+	  "aafe4d2c-2101-4cb0-a0db-48886c4b9f88"
+	],
+	"folders": [
+	  {
+		"id": "aafe4d2c-2101-4cb0-a0db-48886c4b9f88",
+		"name": "User",
+		"description": "User related info",
+		"auth": null,
+		"events": null,
+		"collection": "a5714158-5229-4a97-b4c7-74e86450dd84",
+		"folder": null,
+		"order": [
+		  "03d8be67-a5d7-4b76-b5af-fdb32797296a",
+		  "e58f05b4-9805-4e76-8693-93ef36a8b2c6"
+		],
+		"folders_order": [
+		  
+		],
+		"collectionId": "a5714158-5229-4a97-b4c7-74e86450dd84",
+		"folderId": "aafe4d2c-2101-4cb0-a0db-48886c4b9f88"
+	  }
+	],
+	"requests": [
+	  {
+		"id": "03d8be67-a5d7-4b76-b5af-fdb32797296a",
+		"name": "Signup",
+		"url": "http://{{HostIP}}:{{HostPort}}/user/signup",
+		"description": "User sign up",
+		"data": [
+		  {
+			"key": "name",
+			"value": "rahul ar",
+			"description": "User name",
+			"type": "text",
+			"enabled": true
+		  }
+		],
+		"dataMode": "urlencoded",
+		"headerData": [
+		  {
+			"key": "Content-Type",
+			"name": "Content-Type",
+			"value": "application/x-www-form-urlencoded",
+			"description": "",
+			"type": "text"
+		  }
+		],
+		"method": "POST",
+		"pathVariableData": [
+		  
+		],
+		"queryParams": [
+		  
+		],
+		"auth": null,
+		"events": null,
+		"folder": "aafe4d2c-2101-4cb0-a0db-48886c4b9f88",
+		"responses": [
+		  {
+			"id": "92a86113-6a27-4f09-a100-01367a5c31a6",
+			"name": "http://{{HostIP}}:{{HostPort}}/user/signup",
+			"status": null,
+			"mime": null,
+			"language": "json",
+			"text": "{\n    \"sucess\": false,\n    \"error\": {\n        \"code\": 403,\n        \"message\": \"data and salt arguments required\"\n    }\n}",
+			"responseCode": {
+			  "code": 500,
+			  "name": "Internal Server Error"
+			},
+			"requestObject": {
+			  "data": [
+				{
+				  "key": "name",
+				  "value": "rahul",
+				  "description": "User name",
+				  "type": "text",
+				  "enabled": true
+				}
+			  ],
+			  "dataMode": "urlencoded",
+			  "headerData": [
+				{
+				  "key": "Content-Type",
+				  "name": "Content-Type",
+				  "value": "application/x-www-form-urlencoded",
+				  "description": "",
+				  "type": "text"
+				}
+			  ],
+			  "method": "POST",
+			  "pathVariableData": [
+				
+			  ],
+			  "queryParams": [
+				
+			  ],
+			  "url": "http://{{HostIP}}:{{HostPort}}/user/signup"
+			},
+			"headers": [
+			  {
+				"key": "X-Powered-By",
+				"value": "Express"
+			  },
+			  {
+				"key": "Access-Control-Allow-Origin",
+				"value": "*"
+			  },
+			  {
+				"key": "Content-Type",
+				"value": "application/json; charset=utf-8"
+			  },
+			  {
+				"key": "Content-Length",
+				"value": "82"
+			  },
+			  {
+				"key": "ETag",
+				"value": "W/\"52-fVoFgHnYfDN2yVk2WjtE/w\""
+			  },
+			  {
+				"key": "Date",
+				"value": "Wed, 08 May 2019 09:38:01 GMT"
+			  },
+			  {
+				"key": "Connection",
+				"value": "keep-alive"
+			  }
+			],
+			"cookies": null,
+			"request": "03d8be67-a5d7-4b76-b5af-fdb32797296a",
+			"collection": "a5714158-5229-4a97-b4c7-74e86450dd84"
+		  }
+		],
+		"currentHelper": null,
+		"helperAttributes": null,
+		"collectionId": "a5714158-5229-4a97-b4c7-74e86450dd84",
+		"headers": "Content-Type: application/x-www-form-urlencoded\n",
+		"pathVariables": [
+		  
+		]
+	  },
+	  {
+		"id": "e58f05b4-9805-4e76-8693-93ef36a8b2c6",
+		"name": "Login",
+		"url": "http://{{HostIP}}:{{HostPort}}/user/login",
+		"description": "User login",
+		"data": [
+		  {
+			"key": "name",
+			"value": "rahul ar",
+			"description": "User name",
+			"type": "text",
+			"enabled": true
+		  }
+		],
+		"dataMode": "urlencoded",
+		"headerData": [
+		  {
+			"description": "",
+			"key": "Content-Type",
+			"name": "Content-Type",
+			"type": "text",
+			"value": "application/x-www-form-urlencoded"
+		  }
+		],
+		"method": "POST",
+		"pathVariableData": [
+		  
+		],
+		"queryParams": [
+		  
+		],
+		"auth": null,
+		"events": null,
+		"folder": "aafe4d2c-2101-4cb0-a0db-48886c4b9f88",
+		"responses": [
+		  {
+			"id": "4fc3664a-28ef-4bbc-be79-623d6e9f48f8",
+			"name": "http://{{HostIP}}:{{HostPort}}/user/signup",
+			"status": null,
+			"mime": null,
+			"language": "json",
+			"text": "{\n    \"sucess\": false,\n    \"error\": {\n        \"code\": 403,\n        \"message\": \"data and salt arguments required\"\n    }\n}",
+			"responseCode": {
+			  "code": 500,
+			  "name": "Internal Server Error"
+			},
+			"requestObject": {
+			  "data": [
+				{
+				  "key": "name",
+				  "value": "rahul",
+				  "description": "User name",
+				  "type": "text",
+				  "enabled": true
+				}
+			  ],
+			  "dataMode": "urlencoded",
+			  "headerData": [
+				{
+				  "key": "Content-Type",
+				  "name": "Content-Type",
+				  "value": "application/x-www-form-urlencoded",
+				  "description": "",
+				  "type": "text"
+				}
+			  ],
+			  "method": "POST",
+			  "pathVariableData": [
+				
+			  ],
+			  "queryParams": [
+				
+			  ],
+			  "url": "http://{{HostIP}}:{{HostPort}}/user/signup"
+			},
+			"headers": [
+			  {
+				"key": "X-Powered-By",
+				"value": "Express"
+			  },
+			  {
+				"key": "Access-Control-Allow-Origin",
+				"value": "*"
+			  },
+			  {
+				"key": "Content-Type",
+				"value": "application/json; charset=utf-8"
+			  },
+			  {
+				"key": "Content-Length",
+				"value": "82"
+			  },
+			  {
+				"key": "ETag",
+				"value": "W/\"52-fVoFgHnYfDN2yVk2WjtE/w\""
+			  },
+			  {
+				"key": "Date",
+				"value": "Wed, 08 May 2019 09:38:01 GMT"
+			  },
+			  {
+				"key": "Connection",
+				"value": "keep-alive"
+			  }
+			],
+			"cookies": null,
+			"request": "e58f05b4-9805-4e76-8693-93ef36a8b2c6",
+			"collection": "a5714158-5229-4a97-b4c7-74e86450dd84"
+		  }
+		],
+		"currentHelper": null,
+		"helperAttributes": null,
+		"collectionId": "a5714158-5229-4a97-b4c7-74e86450dd84",
+		"headers": "Content-Type: application/x-www-form-urlencoded\n",
+		"pathVariables": [
+		  
+		]
+	  }
+	]
+  }
