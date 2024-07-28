@@ -55,13 +55,11 @@ public class CreateVoteTest {
         // Verify the request was made
         verify(postRequestedFor(urlEqualTo("/api/votes"))
                 .withHeader("Content-Type", equalTo("application/json")));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_Unauthorized() throws Exception {
-        System.out.println("Starting testCreateVote_Unauthorized");
+        System.out.println("\nStarting testCreateVote_Unauthorized");
 
         // Setup mock response for unauthorized access
         stubFor(post(urlEqualTo("/api/votes"))
@@ -86,13 +84,11 @@ public class CreateVoteTest {
         // Assert response
         assertEquals(401, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"Unauthorized\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_InvalidInput() throws Exception {
-        System.out.println("Starting testCreateVote_InvalidInput");
+        System.out.println("\nStarting testCreateVote_InvalidInput");
 
         // Setup mock response for invalid input
         stubFor(post(urlEqualTo("/api/votes"))
@@ -120,13 +116,11 @@ public class CreateVoteTest {
         // Assert response
         assertEquals(400, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"Invalid input\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_SuccessWithMinimumFields() throws Exception {
-        System.out.println("Starting testCreateVote_SuccessWithMinimumFields");
+        System.out.println("\nStarting testCreateVote_SuccessWithMinimumFields");
 
         String requestBody = "{\"question\":\"Minimum question?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -151,13 +145,11 @@ public class CreateVoteTest {
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"id\":\"12345\""));
         assertTrue(responseBody.contains("\"status\":\"OPEN\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_SuccessWithMaximumFields() throws Exception {
-        System.out.println("Starting testCreateVote_SuccessWithMaximumFields");
+        System.out.println("\nStarting testCreateVote_SuccessWithMaximumFields");
 
         String requestBody = "{\"question\":\"Maximum fields question?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"isMultipleChoice\":true,\"timeEnd\":\"2025-12-31T23:59:59.999Z\",\"description\":\"Detailed description\",\"tags\":[\"tag1\",\"tag2\"],\"attachments\":[\"file1.jpg\",\"file2.pdf\"],\"allowAnonymous\":true,\"restrictedTo\":[\"user2\",\"user3\"]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -183,13 +175,11 @@ public class CreateVoteTest {
         assertTrue(responseBody.contains("\"id\":\"12345\""));
         assertTrue(responseBody.contains("\"isMultipleChoice\":true"));
         assertTrue(responseBody.contains("\"timeEnd\":\"2025-12-31T23:59:59.999Z\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_SingleChoice() throws Exception {
-        System.out.println("Starting testCreateVote_SingleChoice");
+        System.out.println("\nStarting testCreateVote_SingleChoice");
 
         String requestBody = "{\"question\":\"Single choice question?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"isMultipleChoice\":false}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -213,13 +203,11 @@ public class CreateVoteTest {
 
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"isMultipleChoice\":false"));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_MultipleChoices() throws Exception {
-        System.out.println("Starting testCreateVote_MultipleChoices");
+        System.out.println("\nStarting testCreateVote_MultipleChoices");
 
         String requestBody = "{\"question\":\"Multiple choice question?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"},{\"name\":\"Option 3\"}],\"isMultipleChoice\":true}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -243,13 +231,11 @@ public class CreateVoteTest {
 
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"isMultipleChoice\":true"));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_MaximumChoicesLimit() throws Exception {
-        System.out.println("Starting testCreateVote_MaximumChoicesLimit");
+        System.out.println("\nStarting testCreateVote_MaximumChoicesLimit");
 
         StringBuilder choicesBuilder = new StringBuilder("[");
         for (int i = 1; i <= 101; i++) {
@@ -279,13 +265,11 @@ public class CreateVoteTest {
 
         assertEquals(400, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"Exceeded maximum number of choices\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_MinimumChoicesLimit() throws Exception {
-        System.out.println("Starting testCreateVote_MinimumChoicesLimit");
+        System.out.println("\nStarting testCreateVote_MinimumChoicesLimit");
 
         String requestBody = "{\"question\":\"Not enough choices?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -308,13 +292,11 @@ public class CreateVoteTest {
 
         assertEquals(400, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"Minimum of 2 choices required\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_EmptyChoices() throws Exception {
-        System.out.println("Starting testCreateVote_EmptyChoices");
+        System.out.println("\nStarting testCreateVote_EmptyChoices");
 
         String requestBody = "{\"question\":\"No choices?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -337,13 +319,11 @@ public class CreateVoteTest {
 
         assertEquals(400, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"Choices cannot be empty\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_DuplicateChoices() throws Exception {
-        System.out.println("Starting testCreateVote_DuplicateChoices");
+        System.out.println("\nStarting testCreateVote_DuplicateChoices");
 
         String requestBody = "{\"question\":\"Duplicate choices?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 1\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -366,13 +346,11 @@ public class CreateVoteTest {
 
         assertEquals(400, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"Duplicate choices are not allowed\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_LongQuestionText() throws Exception {
-        System.out.println("Starting testCreateVote_LongQuestionText");
+        System.out.println("\nStarting testCreateVote_LongQuestionText");
 
         String longQuestion = "A".repeat(1001); // Assuming 1000 characters is the limit
         String requestBody = "{\"question\":\"" + longQuestion + "\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
@@ -396,13 +374,11 @@ public class CreateVoteTest {
 
         assertEquals(400, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"Question text exceeds maximum length\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_SpecialCharactersInQuestion() throws Exception {
-        System.out.println("Starting testCreateVote_SpecialCharactersInQuestion");
+        System.out.println("\nStarting testCreateVote_SpecialCharactersInQuestion");
 
         String requestBody = "{\"question\":\"Special characters: !@#$%^&*()_+\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -426,13 +402,11 @@ public class CreateVoteTest {
 
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("Special characters: !@#$%^&*()_+"));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_HTMLInjectionInQuestion() throws Exception {
-        System.out.println("Starting testCreateVote_HTMLInjectionInQuestion");
+        System.out.println("\nStarting testCreateVote_HTMLInjectionInQuestion");
 
         String requestBody = "{\"question\":\"<script>alert('XSS')</script>Injection question?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -456,13 +430,11 @@ public class CreateVoteTest {
 
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertFalse(responseBody.contains("<script>"));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_FutureEndTime() throws Exception {
-        System.out.println("Starting testCreateVote_FutureEndTime");
+        System.out.println("\nStarting testCreateVote_FutureEndTime");
 
         String requestBody = "{\"question\":\"Future end time?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"timeEnd\":\"2025-12-31T23:59:59.999Z\"}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -486,13 +458,11 @@ public class CreateVoteTest {
 
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"timeEnd\":\"2025-12-31T23:59:59.999Z\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_PastEndTime() throws Exception {
-        System.out.println("Starting testCreateVote_PastEndTime");
+        System.out.println("\nStarting testCreateVote_PastEndTime");
 
         String requestBody = "{\"question\":\"Past end time?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"timeEnd\":\"2020-01-01T00:00:00.000Z\"}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -515,13 +485,11 @@ public class CreateVoteTest {
 
         assertEquals(400, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"End time must be in the future\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_InvalidDateFormat() throws Exception {
-        System.out.println("Starting testCreateVote_InvalidDateFormat");
+        System.out.println("\nStarting testCreateVote_InvalidDateFormat");
 
         String requestBody = "{\"question\":\"Invalid date format?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"timeEnd\":\"2025-13-32\"}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -544,13 +512,11 @@ public class CreateVoteTest {
 
         assertEquals(400, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"Invalid date format\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_InvalidGroupId() throws Exception {
-        System.out.println("Starting testCreateVote_InvalidGroupId");
+        System.out.println("\nStarting testCreateVote_InvalidGroupId");
 
         String requestBody = "{\"question\":\"Invalid group ID?\",\"groupId\":\"nonexistent_group\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -573,13 +539,11 @@ public class CreateVoteTest {
 
         assertEquals(404, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"Group not found\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_NonExistentCreatorId() throws Exception {
-        System.out.println("Starting testCreateVote_NonExistentCreatorId");
+        System.out.println("\nStarting testCreateVote_NonExistentCreatorId");
 
         String requestBody = "{\"question\":\"Non-existent creator?\",\"groupId\":\"group1\",\"creatorId\":\"nonexistent_user\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -602,13 +566,11 @@ public class CreateVoteTest {
 
         assertEquals(404, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"Creator not found\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_DuplicateVoteInGroup() throws Exception {
-        System.out.println("Starting testCreateVote_DuplicateVoteInGroup");
+        System.out.println("\nStarting testCreateVote_DuplicateVoteInGroup");
 
         String requestBody = "{\"question\":\"Duplicate vote?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -631,13 +593,11 @@ public class CreateVoteTest {
 
         assertEquals(409, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"error\":\"A vote with the same question already exists in this group\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 
     @Test
     public void testCreateVote_ConcurrentCreation() throws Exception {
-        System.out.println("Starting testCreateVote_ConcurrentCreation");
+        System.out.println("\nStarting testCreateVote_ConcurrentCreation");
 
         String requestBody = "{\"question\":\"Concurrent vote?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
 
@@ -688,8 +648,6 @@ public class CreateVoteTest {
         assertEquals(200, response1.getStatusLine().getStatusCode());
         assertEquals(409, response2.getStatusLine().getStatusCode());
         assertTrue(responseBody2.contains("\"error\":\"Concurrent vote creation detected\""));
-
-        System.out.println("\n------------------------------------------------------------------\n");
     }
 }
 
