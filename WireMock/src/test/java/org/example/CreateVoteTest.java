@@ -9,7 +9,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,29 +16,35 @@ import static org.junit.jupiter.api.Assertions.*;
 @WireMockTest(httpPort = 8081)
 public class CreateVoteTest {
     private final HttpClient httpClient = HttpClients.createDefault();
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void testCreateVote_Success() throws Exception {
-        System.out.println("Starting testCreateVote_Success");
+        System.out.println("------------- Starting testCreateVote_Success -------------");
 
-        // Setup mock response
+        // Thiết lập phản hồi mock
         stubFor(post(urlEqualTo("/api/votes"))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody("{\"id\":\"12345\",\"question\":\"Test question\",\"choices\":[{\"id\":\"1\",\"name\":\"Option 1\",\"voters\":[]}],\"groupId\":\"group1\",\"creatorId\":\"user1\",\"timeEnd\":\"2024-06-29T04:17:09.000Z\",\"creationDate\":\"2024-06-29T04:17:09.000Z\",\"closeDate\":\"2024-06-29T04:17:09.000Z\",\"isMultipleChoice\":true,\"status\":\"OPEN\"}")
+                        .withBody("{\"id\":\"12345\",\"question\":\"Test question\",\"choices\":[{\"id\":\"1\"," +
+                                "\"name\":\"Option 1\",\"voters\":[]}],\"groupId\":\"group1\"," +
+                                "\"creatorId\":\"user1\",\"timeEnd\":\"2024-06-29T04:17:09.000Z\"," +
+                                "\"creationDate\":\"2024-06-29T04:17:09.000Z\",\"closeDate\":\"2024-06-29T04:17:09.000Z\"," +
+                                "\"isMultipleChoice\":true,\"status\":\"OPEN\"}")
                 ));
 
-        // Prepare request body
-        String requestBody = "{\"question\":\"Test question\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"timeEnd\":\"2024-06-29T04:17:09.996Z\",\"choices\":[{\"id\":\"1\",\"name\":\"Option 1\",\"voters\":[]}],\"isMultipleChoice\":true}";
+        // Chuẩn bị body yêu cầu
+        String requestBody = "{\"question\":\"Test question\",\"groupId\":\"group1\",\"creatorId\":\"user1\"," +
+                "\"timeEnd\":\"2024-06-29T04:17:09.996Z\",\"choices\":[{\"id\":\"1\",\"name\":\"Option 1\"," +
+                "\"voters\":[]}],\"isMultipleChoice\":true}";
 
-        // Send request
+        // Gửi yêu cầu
         HttpPost request = new HttpPost("http://localhost:8081/api/votes");
         request.setHeader("Content-Type", "application/json");
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -47,19 +52,82 @@ public class CreateVoteTest {
         String responseBody = EntityUtils.toString(response.getEntity());
         System.out.println("Response Body: " + responseBody);
 
-        // Assert response
+        // Xác nhận phản hồi
         assertEquals(200, response.getStatusLine().getStatusCode());
         assertTrue(responseBody.contains("\"id\":\"12345\""));
         assertTrue(responseBody.contains("\"status\":\"OPEN\""));
 
-        // Verify the request was made
+        // Xác nhận yêu cầu đã được thực hiện
         verify(postRequestedFor(urlEqualTo("/api/votes"))
                 .withHeader("Content-Type", equalTo("application/json")));
     }
 
     @Test
+    public void testCreateVote_DuplicateChoices() throws Exception {
+        System.out.println("\n------------- Starting testCreateVote_DuplicateChoices -------------");
+
+        String requestBody = "{\"question\":\"Duplicate choices?\",\"groupId\":\"group1\",\"creatorId\":\"user1\"," +
+                "\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 1\"}],\"groupId\":\"group1\"," +
+                "\"creatorId\":\"user1\",\"timeEnd\":\"2024-06-29T04:17:09.000Z\",\"creationDate\":\"2024-06-29T04:17:09.000Z\"," +
+                "\"closeDate\":\"2024-06-29T04:17:09.000Z\",\"isMultipleChoice\":true,\"status\":\"OPEN\"}";
+        stubFor(post(urlEqualTo("/api/votes"))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withBody("{\"error\":\"Duplicate choices are not allowed\"}")
+                ));
+
+        HttpPost request = new HttpPost("http://localhost:8081/api/votes");
+        request.setHeader("Content-Type", "application/json");
+        request.setEntity(new StringEntity(requestBody));
+
+        System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
+
+        HttpResponse response = httpClient.execute(request);
+
+        System.out.println("Response Status: " + response.getStatusLine().getStatusCode());
+        String responseBody = EntityUtils.toString(response.getEntity());
+        System.out.println("Response Body: " + responseBody);
+
+        assertEquals(400, response.getStatusLine().getStatusCode());
+        assertTrue(responseBody.contains("\"error\":\"Duplicate choices are not allowed\""));
+    }
+
+    @Test
+    public void testCreateVote_LongQuestionText() throws Exception {
+        System.out.println("\n------------- Starting testCreateVote_LongQuestionText -------------");
+
+        String longQuestion = "A".repeat(256); // Assuming 255 characters is the limit
+        String requestBody = "{\"question\":\"" + longQuestion + "\",\"groupId\":\"group1\",\"creatorId\":\"user1\"," +
+                "\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"groupId\":\"group1\",\"creatorId\":\"user1\"," +
+                "\"timeEnd\":\"2024-06-29T04:17:09.000Z\",\"creationDate\":\"2024-06-29T04:17:09.000Z\"," +
+                "\"closeDate\":\"2024-06-29T04:17:09.000Z\",\"isMultipleChoice\":true,\"status\":\"OPEN\"}}";
+        stubFor(post(urlEqualTo("/api/votes"))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withBody("{\"error\":\"Question text exceeds maximum length\"}")
+                ));
+
+        HttpPost request = new HttpPost("http://localhost:8081/api/votes");
+        request.setHeader("Content-Type", "application/json");
+        request.setEntity(new StringEntity(requestBody));
+
+        System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
+
+        HttpResponse response = httpClient.execute(request);
+
+        System.out.println("Response Status: " + response.getStatusLine().getStatusCode());
+        String responseBody = EntityUtils.toString(response.getEntity());
+        System.out.println("Response Body: " + responseBody);
+
+        assertEquals(400, response.getStatusLine().getStatusCode());
+        assertTrue(responseBody.contains("\"error\":\"Question text exceeds maximum length\""));
+    }
+
+    @Test
     public void testCreateVote_Unauthorized() throws Exception {
-        System.out.println("\nStarting testCreateVote_Unauthorized");
+        System.out.println("------------- Starting testCreateVote_Unauthorized -------------");
 
         // Setup mock response for unauthorized access
         stubFor(post(urlEqualTo("/api/votes"))
@@ -88,7 +156,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_InvalidInput() throws Exception {
-        System.out.println("\nStarting testCreateVote_InvalidInput");
+        System.out.println("\n------------- Starting testCreateVote_InvalidInput -------------");
 
         // Setup mock response for invalid input
         stubFor(post(urlEqualTo("/api/votes"))
@@ -106,6 +174,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(invalidRequestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + invalidRequestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -120,7 +189,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_SuccessWithMinimumFields() throws Exception {
-        System.out.println("\nStarting testCreateVote_SuccessWithMinimumFields");
+        System.out.println("\n------------- Starting testCreateVote_SuccessWithMinimumFields -------------");
 
         String requestBody = "{\"question\":\"Minimum question?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -135,6 +204,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -149,7 +219,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_SuccessWithMaximumFields() throws Exception {
-        System.out.println("\nStarting testCreateVote_SuccessWithMaximumFields");
+        System.out.println("\n------------- Starting testCreateVote_SuccessWithMaximumFields -------------");
 
         String requestBody = "{\"question\":\"Maximum fields question?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"isMultipleChoice\":true,\"timeEnd\":\"2025-12-31T23:59:59.999Z\",\"description\":\"Detailed description\",\"tags\":[\"tag1\",\"tag2\"],\"attachments\":[\"file1.jpg\",\"file2.pdf\"],\"allowAnonymous\":true,\"restrictedTo\":[\"user2\",\"user3\"]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -164,6 +234,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -179,7 +250,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_SingleChoice() throws Exception {
-        System.out.println("\nStarting testCreateVote_SingleChoice");
+        System.out.println("\n------------- Starting testCreateVote_SingleChoice -------------");
 
         String requestBody = "{\"question\":\"Single choice question?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"isMultipleChoice\":false}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -194,6 +265,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -207,7 +279,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_MultipleChoices() throws Exception {
-        System.out.println("\nStarting testCreateVote_MultipleChoices");
+        System.out.println("\n------------- Starting testCreateVote_MultipleChoices -------------");
 
         String requestBody = "{\"question\":\"Multiple choice question?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"},{\"name\":\"Option 3\"}],\"isMultipleChoice\":true}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -222,6 +294,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -235,7 +308,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_MaximumChoicesLimit() throws Exception {
-        System.out.println("\nStarting testCreateVote_MaximumChoicesLimit");
+        System.out.println("\n------------- Starting testCreateVote_MaximumChoicesLimit -------------");
 
         StringBuilder choicesBuilder = new StringBuilder("[");
         for (int i = 1; i <= 101; i++) {
@@ -256,6 +329,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -269,7 +343,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_MinimumChoicesLimit() throws Exception {
-        System.out.println("\nStarting testCreateVote_MinimumChoicesLimit");
+        System.out.println("\n------------- Starting testCreateVote_MinimumChoicesLimit -------------");
 
         String requestBody = "{\"question\":\"Not enough choices?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -283,6 +357,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -296,7 +371,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_EmptyChoices() throws Exception {
-        System.out.println("\nStarting testCreateVote_EmptyChoices");
+        System.out.println("\n------------- Starting testCreateVote_EmptyChoices -------------");
 
         String requestBody = "{\"question\":\"No choices?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -310,6 +385,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -322,63 +398,8 @@ public class CreateVoteTest {
     }
 
     @Test
-    public void testCreateVote_DuplicateChoices() throws Exception {
-        System.out.println("\nStarting testCreateVote_DuplicateChoices");
-
-        String requestBody = "{\"question\":\"Duplicate choices?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 1\"}]}";
-        stubFor(post(urlEqualTo("/api/votes"))
-                .willReturn(aResponse()
-                        .withStatus(400)
-                        .withBody("{\"error\":\"Duplicate choices are not allowed\"}")
-                ));
-
-        HttpPost request = new HttpPost("http://localhost:8081/api/votes");
-        request.setHeader("Content-Type", "application/json");
-        request.setEntity(new StringEntity(requestBody));
-
-        System.out.println("Request URL: " + request.getURI());
-
-        HttpResponse response = httpClient.execute(request);
-
-        System.out.println("Response Status: " + response.getStatusLine().getStatusCode());
-        String responseBody = EntityUtils.toString(response.getEntity());
-        System.out.println("Response Body: " + responseBody);
-
-        assertEquals(400, response.getStatusLine().getStatusCode());
-        assertTrue(responseBody.contains("\"error\":\"Duplicate choices are not allowed\""));
-    }
-
-    @Test
-    public void testCreateVote_LongQuestionText() throws Exception {
-        System.out.println("\nStarting testCreateVote_LongQuestionText");
-
-        String longQuestion = "A".repeat(1001); // Assuming 1000 characters is the limit
-        String requestBody = "{\"question\":\"" + longQuestion + "\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
-        stubFor(post(urlEqualTo("/api/votes"))
-                .willReturn(aResponse()
-                        .withStatus(400)
-                        .withBody("{\"error\":\"Question text exceeds maximum length\"}")
-                ));
-
-        HttpPost request = new HttpPost("http://localhost:8081/api/votes");
-        request.setHeader("Content-Type", "application/json");
-        request.setEntity(new StringEntity(requestBody));
-
-        System.out.println("Request URL: " + request.getURI());
-
-        HttpResponse response = httpClient.execute(request);
-
-        System.out.println("Response Status: " + response.getStatusLine().getStatusCode());
-        String responseBody = EntityUtils.toString(response.getEntity());
-        System.out.println("Response Body: " + responseBody);
-
-        assertEquals(400, response.getStatusLine().getStatusCode());
-        assertTrue(responseBody.contains("\"error\":\"Question text exceeds maximum length\""));
-    }
-
-    @Test
     public void testCreateVote_SpecialCharactersInQuestion() throws Exception {
-        System.out.println("\nStarting testCreateVote_SpecialCharactersInQuestion");
+        System.out.println("\n------------- Starting testCreateVote_SpecialCharactersInQuestion -------------");
 
         String requestBody = "{\"question\":\"Special characters: !@#$%^&*()_+\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -393,6 +414,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -406,7 +428,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_HTMLInjectionInQuestion() throws Exception {
-        System.out.println("\nStarting testCreateVote_HTMLInjectionInQuestion");
+        System.out.println("\n------------- Starting testCreateVote_HTMLInjectionInQuestion -------------");
 
         String requestBody = "{\"question\":\"<script>alert('XSS')</script>Injection question?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -421,6 +443,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -434,7 +457,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_FutureEndTime() throws Exception {
-        System.out.println("\nStarting testCreateVote_FutureEndTime");
+        System.out.println("\n------------- Starting testCreateVote_FutureEndTime -------------");
 
         String requestBody = "{\"question\":\"Future end time?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"timeEnd\":\"2025-12-31T23:59:59.999Z\"}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -449,6 +472,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -462,7 +486,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_PastEndTime() throws Exception {
-        System.out.println("\nStarting testCreateVote_PastEndTime");
+        System.out.println("\n------------- Starting testCreateVote_PastEndTime -------------");
 
         String requestBody = "{\"question\":\"Past end time?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"timeEnd\":\"2020-01-01T00:00:00.000Z\"}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -476,6 +500,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -489,7 +514,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_InvalidDateFormat() throws Exception {
-        System.out.println("\nStarting testCreateVote_InvalidDateFormat");
+        System.out.println("\n------------- Starting testCreateVote_InvalidDateFormat -------------");
 
         String requestBody = "{\"question\":\"Invalid date format?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}],\"timeEnd\":\"2025-13-32\"}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -503,6 +528,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -516,7 +542,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_InvalidGroupId() throws Exception {
-        System.out.println("\nStarting testCreateVote_InvalidGroupId");
+        System.out.println("\n------------- Starting testCreateVote_InvalidGroupId -------------");
 
         String requestBody = "{\"question\":\"Invalid group ID?\",\"groupId\":\"nonexistent_group\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -530,6 +556,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -543,7 +570,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_NonExistentCreatorId() throws Exception {
-        System.out.println("\nStarting testCreateVote_NonExistentCreatorId");
+        System.out.println("\n------------- Starting testCreateVote_NonExistentCreatorId -------------");
 
         String requestBody = "{\"question\":\"Non-existent creator?\",\"groupId\":\"group1\",\"creatorId\":\"nonexistent_user\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -557,6 +584,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -570,7 +598,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_DuplicateVoteInGroup() throws Exception {
-        System.out.println("\nStarting testCreateVote_DuplicateVoteInGroup");
+        System.out.println("\n------------- Starting testCreateVote_DuplicateVoteInGroup -------------");
 
         String requestBody = "{\"question\":\"Duplicate vote?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
         stubFor(post(urlEqualTo("/api/votes"))
@@ -584,6 +612,7 @@ public class CreateVoteTest {
         request.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request URL: " + request.getURI());
+        System.out.println("Request Body: " + requestBody);
 
         HttpResponse response = httpClient.execute(request);
 
@@ -597,7 +626,7 @@ public class CreateVoteTest {
 
     @Test
     public void testCreateVote_ConcurrentCreation() throws Exception {
-        System.out.println("\nStarting testCreateVote_ConcurrentCreation");
+        System.out.println("\n------------- Starting testCreateVote_ConcurrentCreation -------------");
 
         String requestBody = "{\"question\":\"Concurrent vote?\",\"groupId\":\"group1\",\"creatorId\":\"user1\",\"choices\":[{\"name\":\"Option 1\"},{\"name\":\"Option 2\"}]}";
 
@@ -626,6 +655,7 @@ public class CreateVoteTest {
         request1.setEntity(new StringEntity(requestBody));
 
         System.out.println("Request1 URL: " + request1.getURI());
+        System.out.println("Request1 Body: " + requestBody);
 
         HttpResponse response1 = httpClient.execute(request1);
 

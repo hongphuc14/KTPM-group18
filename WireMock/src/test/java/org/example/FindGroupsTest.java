@@ -25,7 +25,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_Success() throws Exception {
-        System.out.println("Starting testFindGroups_Success");
+        System.out.println("------------- Starting testFindGroups_Success -------------");
 
         // Mock API response
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
@@ -70,7 +70,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_EmptyResult() throws Exception {
-        System.out.println("\nStarting testFindGroups_EmptyResult");
+        System.out.println("\n------------- Starting testFindGroups_EmptyResult -------------");
 
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .willReturn(aResponse()
@@ -101,7 +101,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_Pagination() throws Exception {
-        System.out.println("\nStarting testFindGroups_Pagination");
+        System.out.println("\n------------- Starting testFindGroups_Pagination -------------");
 
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .willReturn(aResponse()
@@ -133,7 +133,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_FilterByStatus() throws Exception {
-        System.out.println("\nStarting testFindGroups_FilterByStatus");
+        System.out.println("\n------------- Starting testFindGroups_FilterByStatus -------------");
 
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .withQueryParam("status", equalTo("ACTIVE"))
@@ -169,7 +169,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_FilterByCategory() throws Exception {
-        System.out.println("\nStarting testFindGroups_FilterByCategory");
+        System.out.println("\n------------- Starting testFindGroups_FilterByCategory -------------");
 
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .withQueryParam("groupCategory", equalTo("TestCategory"))
@@ -205,7 +205,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_InvalidPageNumber() throws Exception {
-        System.out.println("\nStarting testFindGroups_InvalidPageNumber");
+        System.out.println("\n------------- Starting testFindGroups_InvalidPageNumber -------------");
 
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .withQueryParam("page", equalTo("-1"))
@@ -231,7 +231,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_InvalidPageSize() throws Exception {
-        System.out.println("\nStarting testFindGroups_InvalidPageSize");
+        System.out.println("------------- Starting testFindGroups_InvalidPageSize --------------");
 
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .withQueryParam("pageSize", equalTo("1001"))
@@ -257,7 +257,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_InvalidStatus() throws Exception {
-        System.out.println("\nStarting testFindGroups_InvalidStatus");
+        System.out.println("\n------------- Starting testFindGroups_InvalidStatus -------------");
 
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .withQueryParam("status", equalTo("INVALID_STATUS"))
@@ -283,7 +283,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_Unauthorized() throws Exception {
-        System.out.println("\nStarting testFindGroups_Unauthorized");
+        System.out.println("\n------------- Starting testFindGroups_Unauthorized -------------");
 
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .willReturn(aResponse()
@@ -306,7 +306,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_ServerError() throws Exception {
-        System.out.println("\nStarting testFindGroups_ServerError");
+        System.out.println("\n------------- Starting testFindGroups_ServerError -------------");
 
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .willReturn(aResponse()
@@ -329,7 +329,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_TimeFilter() throws Exception {
-        System.out.println("\nStarting testFindGroups_TimeFilter");
+        System.out.println("\n------------- Starting testFindGroups_TimeFilter -------------");
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .withQueryParam("timeStart", matching("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
                 .withQueryParam("timeEnd", matching("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}"))
@@ -359,7 +359,7 @@ public class FindGroupsTest {
 
     @Test
     public void testFindGroups_CombinedFilters() throws Exception {
-        System.out.println("\nStarting testFindGroups_CombinedFilters");
+        System.out.println("\n------------- Starting testFindGroups_CombinedFilters -------------");
 
         stubFor(get(urlPathEqualTo("/api/analytic/find"))
                 .withQueryParam("groupName", equalTo("TestGroup"))
